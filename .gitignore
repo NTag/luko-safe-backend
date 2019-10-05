@@ -1,0 +1,4 @@
+node_modules
+data
+docker-compose.prod.yml
+deploy.js
