@@ -61,10 +61,7 @@ app.post('/items', async (req, res) => {
   items.unshift(item);
   console.log(`  ${items.length} items`);
 
-  res.status(201).send({
-    name: item.name,
-    purchaseValue: item.purchaseValue,
-  });
+  res.status(201).send(itemSummary(item));
 });
 app.get('/items/:id', (req, res) => {
   const id = req.params.id;
