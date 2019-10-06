@@ -50,16 +50,16 @@ app.post('/items', async (req, res) => {
 
   const imageBase64 = data.image;
   const imageBuffer = new Buffer(imageBase64, 'base64');
-  const thumbnail = (await sharp(imageBuffer).resize(400).toBuffer()).toString('base64');
-  const image = (await sharp(imageBuffer).resize(1600).toBuffer()).toString('base64');
+  const thumbnail = (await sharp(imageBuffer).rotate().resize(400).toBuffer()).toString('base64');
+  const image = (await sharp(imageBuffer).rotate().resize(1600).toBuffer()).toString('base64');
 
   const receiptBuffer = new Buffer(data.receipt, 'base64');
-  const receipt = (await sharp(receiptBuffer).resize(1600).toBuffer()).toString('base64');
+  const receipt = (await sharp(receiptBuffer).rotate().resize(1600).toBuffer()).toString('base64');
 
   const photos = [];
   for (let photo of data.photos) {
     const photoBuffer = new Buffer(photo, 'base64');
-    const smallPhoto = (await sharp(photoBuffer).resize(1600).toBuffer()).toString('base64');
+    const smallPhoto = (await sharp(photoBuffer).rotate().resize(1600).toBuffer()).toString('base64');
     photos.push(smallPhoto);
   }
 
