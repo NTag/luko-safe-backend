@@ -1,8 +1,7 @@
-# Luko
-## Interview
-### Backend
+# Luko Safe
+## Backend
 
-#### Installation
+### Installation
 ```
 npm install
 npm start
