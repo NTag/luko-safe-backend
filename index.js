@@ -45,33 +45,32 @@ app.get('/', (req, res) => res.send());
 app.get('/items', (req, res) => res.send(items.map(itemSummary)));
 app.get('/categories', (req, res) => res.send(CATEGORIES));
 app.post('/items', async (req, res) => {
-  const item2 = { ...req.body };
-  delete item2.image;
-  console.log('new item', item2);
+  const data = req.body;
+  console.log('new item', itemSummary(data));
 
-  const imageBase64 = req.body.image;
+  const imageBase64 = data.image;
   const imageBuffer = new Buffer(imageBase64, 'base64');
   const thumbnail = (await sharp(imageBuffer).resize(400).toBuffer()).toString('base64');
   const image = (await sharp(imageBuffer).resize(1600).toBuffer()).toString('base64');
 
-  const receiptBuffer = new Buffer(req.body.receipt, 'base64');
+  const receiptBuffer = new Buffer(data.receipt, 'base64');
   const receipt = (await sharp(receiptBuffer).resize(1600).toBuffer()).toString('base64');
 
   const photos = [];
-  for (let photo of req.body.photos) {
+  for (let photo of data.photos) {
     const photoBuffer = new Buffer(photo, 'base64');
     const smallPhoto = (await sharp(photoBuffer).resize(1600).toBuffer()).toString('base64');
     photos.push(smallPhoto);
   }
 
   const estimatedValue = [
-    Math.round(parseNumber(item2.purchaseValue) * 0.6),
-    Math.round(parseNumber(item2.purchaseValue) * 0.8),
+    Math.round(parseNumber(data.purchaseValue) * 0.6),
+    Math.round(parseNumber(data.purchaseValue) * 0.8),
   ]; // fake estimation
-  const endWarrantyDate = moment(item2.purchaseDate).add(2, 'years'); // default French warranty
+  const endWarrantyDate = moment(data.purchaseDate).add(2, 'years'); // default French warranty
 
   const item = {
-    ...req.body,
+    ...data,
     thumbnail,
     id: uuidv4(),
     estimatedValue,
@@ -79,6 +78,7 @@ app.post('/items', async (req, res) => {
     image,
     receipt,
     photos,
+    purchaseValue: parseNumber(data.purchaseValue),
   };
 
   items.unshift(item);
