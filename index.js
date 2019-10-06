@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const app = express();
+const sharp = require('sharp');
 const port = 8080;
 
 app.use(morgan('combined'));
@@ -15,14 +16,30 @@ const CATEGORIES = [
 
 const items = [];
 
+const itemSummary = (item) => {
+  const item2 = { ...item };
+  delete item2.image;
+  return item2;
+};
+
 app.get('/', (req, res) => res.send());
-app.get('/items', (req, res) => res.send(items));
+app.get('/items', (req, res) => res.send(items.map(itemSummary)));
 app.get('/categories', (req, res) => res.send(CATEGORIES));
-app.post('/items', (req, res) => {
-  console.log('new item — name:', req.body.name);
-  items.unshift(req.body);
+app.post('/items', async (req, res) => {
+  const item2 = { ...req.body };
+  delete item2.image;
+  console.log('new item', item2);
+  const imageBase64 = req.body.image;
+  const imageBuffer = new Buffer(imageBase64, 'base64');
+  const thumbnail = (await sharp(imageBuffer).resize(400).toBuffer()).toString('base64');
+  const item = { ...req.body, thumbnail: thumbnail };
+  items.unshift(item);
   console.log(`  ${items.length} items`);
-  res.status(201).send({});
+
+  res.status(201).send({
+    name: item.name,
+    purchaseValue: item.purchaseValue,
+  });
 });
 
 app.listen(port, () => console.log(`Luko safe backend running on port ${port}!`));
